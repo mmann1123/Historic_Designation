@@ -255,6 +255,8 @@ if(file.exists(gpkg_filename)) {
 if(exists("dc_acs_data")) {
   for(year in names(dc_acs_data)) {
     layer_name <- paste0("acs_", year)
+    # Set CRS to 4326 before writing
+    dc_acs_data[[year]] <- st_transform(dc_acs_data[[year]], 4326)
     st_write(dc_acs_data[[year]], 
              dsn = gpkg_filename,  
              layer = layer_name,
