@@ -1,0 +1,294 @@
+---
+title: "Handling Census Data in R"
+output: html_notebook
+author: Michael Mann GWU mmann1123@gwu.edu
+---
+
+# Install
+Before you begin this tutorial you must download R  [R Markdown](https://mirrors.nics.utk.edu/cran/). Then install [R Studio’s](https://rstudio.com/products/rstudio/download/) IDE (stands for integrated development environment), a powerful user interface for R. Get the Open Source Edition of RStudio Desktop. R Studio . Then open R Studio. 
+
+If you have a pre-existing installation of R and/or RStudio, I highly recommend that you reinstall both and get as current as possible. It can be considerably harder to run old software than new.
+
+# Libraries
+R is an extensible system and many people share useful code they have developed as a package via CRAN and GitHub. This provides most of the functionality we are looking to use, for instance plotting, GIS operations, etc.  To install a package from CRAN, for example the dplyr package for data manipulation, here is one way to do it in the R console (there are others).
+
+*Keep in mind you only need to install new packages (aka libraries) the first time you run R. Or if you want to update it to the most recent version.*
+ 
+```{r   }
+install.packages('dplyr') # data manipulation and cleaning
+
+```
+
+Now let's install the libraries (additional functions) we need to use for this tutorial. 
+
+```{r  }
+install.packages('sf')         # spatial data handling
+remotes::install_github("walkerke/tidycensus")
+  # census data download see https://walkerke.github.io/tidycensus/articles/basic-usage.html
+install.packages("cli")        # needed for devtools install
+install.packages('devtools')   # allows installation of libraries from github
+devtools::install_github("tidyverse/ggplot2")    # plotting installing latest version from github so that it works with sf
+          # if prompted please select "1" to install all additional packages
+install.packages('ggthemes')   # plotting themes
+```
+
+
+# Getting Access to Census Data
+
+Now that we have installed all the needed libraries (packages), we need to load them into R. *You will need to run this bit of code every time you open R* to get this to work. 
+
+```{r  }
+library(tidycensus)
+library(sf)
+library(ggplot2)
+library(ggthemes)
+library(dplyr)
+library(tidyverse)
+options(tigris_use_cache = TRUE)
+```
+
+
+To get started working with tidycensus, users should load the package along with the tidyverse package, and set their Census API key. A key can be obtained from [Census API Key](http://api.census.gov/data/key_signup.html).  **It will provide you with a 40 digit text string. Please keep track of this number. Store it in a safe place.**
+ 
+```{r include=T, eval=FALSE}
+API_Key = 'enter_API_key'  # non working example - please paste your own in
+census_api_key(API_Key, install = T, overwrite=TRUE)  
+```
+ 
+# Downloading DC Census Tract Data with Geometry
+
+Now let's download both 5-year ACS data and decennial Census data for all census tracts in Washington DC with tract geometry for all available years.
+
+## Part 1: 5-Year ACS Data (2009-2022)
+
+```{r}
+# Get available years for 5-year ACS data (2009-2024 as of latest release)
+acs_available_years <- 2009:2023
+
+# Initialize empty list to store ACS data for each year
+dc_acs_data <- list()
+
+# Download ACS data for each available year
+for(year in acs_available_years) {
+  tryCatch({
+    # Download demographic and housing data for DC tracts with geometry
+    dc_data <- get_acs(
+      geography = "tract",
+      state = "DC",           # Washington DC
+      year = year,
+      variables = c(
+        total_pop = "B01003_001",      # Total population
+        median_income = "B19013_001",   # Median household income
+        white_alone = "B02001_002",     # White alone
+        black_alone = "B02001_003",     # Black alone
+        asian_alone = "B02001_005",     # Asian alone
+        hispanic = "B03003_003",        # Hispanic or Latino
+        # median_rent = "B25064_001",     # Median gross rent
+        median_home_value = "B25077_001", # Median value (owner-occupied housing units)
+        low_quart_rent = "B25057_001",   # Low quartile rent
+        median_rent = "B25058_001",         # Median rent
+        upper_quart_rent = "B25059_001",  # Upper quartile rent
+        total_housing_units = "B25001_001", # Total housing units
+        owner_occupied = "B25003_002",  # Owner-occupied housing units
+        renter_occupied = "B25003_003"  # Renter-occupied housing units
+      ),
+      output = "wide",
+      geometry = TRUE,        # Include tract geometry
+      cache_table = TRUE,
+      survey = "acs5"
+    )
+    
+    # Add year column and data source
+    dc_data$year <- year
+    dc_data$data_source <- "ACS5"
+    
+    # Store in list
+    dc_acs_data[[as.character(year)]] <- dc_data
+    
+    cat("Downloaded ACS data for year:", year, "\n")
+    
+  }, error = function(e) {
+    cat("Error downloading ACS data for year", year, ":", e$message, "\n")
+  })
+}
+
+# Combine all ACS years into one dataset
+if(length(dc_acs_data) > 0) {
+  dc_acs_all_years <- do.call(rbind, dc_acs_data)
+  cat("Total ACS rows downloaded:", nrow(dc_acs_all_years), "\n")
+  cat("ACS years available:", unique(dc_acs_all_years$year), "\n")
+} else {
+  cat("No ACS data was successfully downloaded\n")
+}
+```
+
+## Part 2: Decennial Census Data ( 2000,  )
+
+```{r}
+# Available decennial census years with tract-level spatial data
+# Note: 1990 not available via tidycensus API
+decennial_years <- c(2000)
+
+# Initialize empty list to store decennial data
+dc_decennial_data <- list()
+
+# Download decennial data for each available year
+for(year in decennial_years) {
+  tryCatch({
+    
+    # Variables vary by year due to questionnaire changes
+    if(year == 2020) {
+      # 2020 variables - use DHC (Demographic and Housing Characteristics File) variables
+      variables <- c(
+        total_pop = "P1_001N",         # Total population
+        white_alone = "P1_005N",       # White alone
+        black_alone = "P1_006N",       # Black or African American alone
+        asian_alone = "P1_008N",       # Asian alone
+        hispanic = "P2_002N",          # Hispanic or Latino
+        total_housing_units = "H1_001N" # Total housing units
+      )
+      sumfile_param <- "pl"# "dhc"  # Demographic and Housing Characteristics File for 2020
+    } else if(year == 2010) {
+      # 2010 variables - use SF1 (Summary File 1)
+      variables <- c(
+        total_pop = "P001001",         # Total population
+        white_alone = "P005003",       # White alone
+        black_alone = "P005004",       # Black alone
+        asian_alone = "P005006",       # Asian alone
+        hispanic = "P004003",          # Hispanic or Latino
+        total_housing_units = "H001001" # Total housing units
+      )
+      sumfile_param <- "sf1"  # Summary File 1 for 2010
+    } else if(year == 2000) {
+      # 2000 variables (SF1 for basic demographics, SF3 for detailed characteristics)
+      variables <- c(
+        total_pop = "P001001", # Total population
+        white_alone = "P006002", # White alone
+        black_alone = "P006003", # Black alone
+        asian_alone = "P006005", # Asian alone
+        hispanic = "P007010", # Hispanic or Latino
+        total_housing_units = "H001001", # Total housing units
+        median_income = "P053001", # Median household income (SF3)
+        median_rent = "H063001", # Median gross rent (SF3)
+        low_quart_rent = "H055001", # Low quartile rent
+        upper_quart_rent = "H056001", # Upper quartile rent
+        median_home_value = "H085001", # Median value owner-occupied (SF3)
+        owner_occupied = "H004001" # Owner-occupied housing units
+      )
+      sumfile_param <- "sf3"  # Summary File 3 for 2000 to get income/housing data
+    }
+    
+    dc_decennial <- get_decennial(
+      geography = "tract",
+      state = "DC",
+      year = year,
+      variables = variables,
+      output = "wide",
+      geometry = TRUE,
+      sumfile = sumfile_param
+    )
+    
+    # Add year column and data source
+    dc_decennial$year <- year
+    dc_decennial$data_source <- "Decennial"
+    
+    # Store in list
+    dc_decennial_data[[as.character(year)]] <- dc_decennial
+    
+    cat("Downloaded decennial data for year:", year, "\n")
+    
+  }, error = function(e) {
+    cat("Error downloading decennial data for year", year, ":", e$message, "\n")
+  })
+}
+
+# Combine all decennial years
+if(length(dc_decennial_data) > 0) {
+  dc_decennial_all_years <- do.call(rbind, dc_decennial_data)
+  cat("Total decennial rows downloaded:", nrow(dc_decennial_all_years), "\n")
+  cat("Decennial years available:", unique(dc_decennial_all_years$year), "\n")
+} else {
+  cat("No decennial data was successfully downloaded\n")
+}
+```
+
+## Part 3: Combine All Data Sources
+
+```{r}
+# Create a combined dataset with standardized column names
+# Note: Due to different variable availability, we'll keep them separate but accessible
+
+all_census_data <- list(
+  acs = if(exists("dc_acs_all_years")) dc_acs_all_years else NULL,
+  decennial = if(exists("dc_decennial_all_years")) dc_decennial_all_years else NULL
+)
+
+# Print summary
+cat("=== DATA SUMMARY ===\n")
+if(!is.null(all_census_data$acs)) {
+  cat("ACS 5-year data available for years:", paste(sort(unique(all_census_data$acs$year)), collapse = ", "), "\n")
+  cat("ACS observations:", nrow(all_census_data$acs), "\n")
+}
+if(!is.null(all_census_data$decennial)) {
+  cat("Decennial data available for years:", paste(sort(unique(all_census_data$decennial$year)), collapse = ", "), "\n")
+  cat("Decennial observations:", nrow(all_census_data$decennial), "\n")
+}
+```
+ 
+ 
+
+# Write Out Shapefiles
+
+Writing out data to shapefiles is also very easy. 
+
+```{r}
+# Export to GeoPackage with separate layers for each year
+gpkg_filename <- "dc_census_tracts_complete.gpkg"
+
+# Remove existing geopackage if it exists
+if(file.exists(gpkg_filename)) {
+  file.remove(gpkg_filename)
+  cat("Removed existing geopackage\n")
+}
+
+# Export ACS data - each year as a separate layer
+if(exists("dc_acs_data")) {
+  for(year in names(dc_acs_data)) {
+    layer_name <- paste0("acs_", year)
+    st_write(dc_acs_data[[year]], 
+             dsn = gpkg_filename,  
+             layer = layer_name,
+             driver = "GPKG", 
+             append = TRUE)
+    cat("Added ACS layer:", layer_name, "\n")
+  }
+}
+
+# Export decennial data - each year as a separate layer
+if(exists("dc_decennial_data")) {
+  for(year in names(dc_decennial_data)) {
+    layer_name <- paste0("decennial_", year)
+    st_write(dc_decennial_data[[year]], 
+             dsn = gpkg_filename,  
+             layer = layer_name,
+             driver = "GPKG", 
+             append = TRUE)
+    cat("Added decennial layer:", layer_name, "\n")
+  }
+}
+ 
+
+cat("Complete geopackage exported:", gpkg_filename, "\n")
+
+# List all layers in the geopackage
+if(file.exists(gpkg_filename)) {
+  layers <- st_layers(gpkg_filename)
+  cat("Geopackage contains", length(layers$name), "layers:\n")
+  for(i in 1:length(layers$name)) {
+    cat(" -", layers$name[i], "(", layers$features[i], "features )\n")
+  }
+}
+ 
+```
+
+

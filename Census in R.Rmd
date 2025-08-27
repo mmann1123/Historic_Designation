@@ -1,0 +1,260 @@
+---
+title: "Handling Census Data in R"
+output: html_notebook
+author: Michael Mann GWU mmann1123@gwu.edu
+---
+
+# Install
+Before you begin this tutorial you must download R  [R Markdown](https://mirrors.nics.utk.edu/cran/). Then install [R Studio’s](https://rstudio.com/products/rstudio/download/) IDE (stands for integrated development environment), a powerful user interface for R. Get the Open Source Edition of RStudio Desktop. R Studio . Then open R Studio. 
+
+If you have a pre-existing installation of R and/or RStudio, I highly recommend that you reinstall both and get as current as possible. It can be considerably harder to run old software than new.
+
+# Libraries
+R is an extensible system and many people share useful code they have developed as a package via CRAN and GitHub. This provides most of the functionality we are looking to use, for instance plotting, GIS operations, etc.  To install a package from CRAN, for example the dplyr package for data manipulation, here is one way to do it in the R console (there are others).
+
+*Keep in mind you only need to install new packages (aka libraries) the first time you run R. Or if you want to update it to the most recent version.*
+ 
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=T}
+install.packages('dplyr') # data manipulation and cleaning
+
+```
+
+Now let's install the libraries (additional functions) we need to use for this tutorial. 
+
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=T}
+install.packages('sf')         # spatial data handling
+install.packages('tidycensus') # census data download see https://walkerke.github.io/tidycensus/articles/basic-usage.html
+install.packages("cli")        # needed for devtools install
+install.packages('devtools')   # allows installation of libraries from github
+devtools::install_github("tidyverse/ggplot2")    # plotting installing latest version from github so that it works with sf
+          # if prompted please select "1" to install all additional packages
+install.packages('ggthemes')   # plotting themes
+```
+
+
+# Getting Access to Census Data
+
+Now that we have installed all the needed libraries (packages), we need to load them into R. *You will need to run this bit of code every time you open R* to get this to work. 
+
+```{r message=FALSE, warning=FALSE, include=T}
+library(tidycensus)
+library(sf)
+library(ggplot2)
+library(ggthemes)
+library(dplyr)
+```
+
+
+To get started working with tidycensus, users should load the package along with the tidyverse package, and set their Census API key. A key can be obtained from [Census API Key](http://api.census.gov/data/key_signup.html).  **It will provide you with a 40 digit text string. Please keep track of this number. Store it in a safe place.**
+ 
+```{r include=T, eval=FALSE}
+API_Key = 'yourapikey'  # non working example - please paste your own in
+census_api_key(API_Key, install = F, overwrite=TRUE)  
+```
+
+# Basic Census Data Analysis
+
+Now that we have access to the census API we can start accessing the data. We have to make a few choices, what census "decennial" vs "acs" (American Community Survey),the geography level e.g. "state","county","tract", or "block group", the question identifier (*not all questions are available at all geography levels*), and the year.
+
+There are two major functions implemented in tidycensus: get_decennial, which grants access to the 1990, 2000, and 2010 decennial US Census APIs, and get_acs, which grants access to the 5-year American Community Survey APIs. 
+
+In this basic example, let’s look at Median household income in the past 12 months of 2016. 
+
+```{r}
+medinc <- get_acs(geography = "state", year = 2016,
+                     variables = c(medincome = "B19013_001"), 
+                     output = 'wide')
+head(medinc)
+```
+
+Above we can see that the `variables = c(rent="H043A001")` assigned the values for question "B19013_001" to a column called 'medincome'. There are two variables that get returned "E" designates this is the income "estimate" and "M" is the "margin of error". So we want to use "medincomeE" for our work. We are also set ` output = 'wide'`, *just do this from now on the default output is harder to use*. 
+
+Now let's visualize the data. Here notice that the data hasn't been sorted. 
+
+```{r fig.height=7}
+medinc %>%
+  ggplot(aes(x = medincomeE, y =  NAME )) + 
+  geom_point()
+```
+
+Let's look at the same data, but we will sort it decending by rent. We can also clean up the labels for x and y. For more help with plotting in ggplot go [here](https://ggplot2.tidyverse.org/reference/).
+
+```{r fig.height=7}
+medinc %>%
+  ggplot(aes(x = medincomeE, y =  reorder(NAME, medincomeE) )) + 
+  geom_point() +xlab('Median Income 2016')+ylab('State')
+```
+
+
+
+# Finding the right question
+
+Before we start you need to find the census code for the question you want. Tidycensus makes this fairly simple. We just need to download all questions and codes for either the ACS or Decennial census. For most interesting questions we will want to look at the ACS five year estimates, we are going to use the function [load_variables](https://walkerke.github.io/tidycensus/reference/load_variables.html) to download all the questions. 
+
+
+```{r}
+acs <- load_variables(year = 2016,
+                      dataset = "acs5", 
+                      cache = TRUE)     #stores it so you don't have to download it again later
+head(acs)
+```
+
+So the `name` column holds the question codes, `label` gives the description, and `concept` gives the question category. To `acs` double click it in the upper right hand corner of RStudio, notice you can filter questions. 
+
+# Mapping Census Data
+
+Now let's download the data and geometry from the API. We do this by rerunning `get_acs`  but with `geometry = True`. Notice below the column called geometry. This holds the lat and lon of each point making up the state polygons. 
+
+```{r}
+medinc <- get_acs(geography = "state", year = 2016,
+                     variables = c(medincome = "B19013_001"), 
+                     output = 'wide',
+                     geometry = TRUE, # this downloads the lat and lon data
+                     shift_geo = TRUE # this move AK and PR closer to the US so we can map them easily
+                      )
+head(medinc)
+```
+
+Now let's plot it using the powers of ggplot and sf. 
+
+```{r}
+
+ggplot()+geom_sf(data=medinc,               # this tells ggplot where the data is stored
+                 aes(fill = medincomeE))    # we are saying to use the values of medincomeE as the fill color
+
+```
+
+
+Let's learn quickly how to reproject data as well. Here we are going to use what is called a "proj4string" which holds all the information needed, for instance the location of the prime meridian, linear units etc. (Site to help identify appropriate projection)[https://projectionwizard.org/#]. (Site to help identify proj4strings)[https://epsg.io/].
+
+Here we will project the data to web mercator and plot the result.
+
+```{r}
+medinc_bg_albers = st_transform(medinc, 
+                         crs = '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs')  
+
+
+ggplot()+geom_sf(data=medinc_bg_albers,               # this tells ggplot where the data is stored
+                 aes(fill = medincomeE)) +   # we are saying to use the values of medincomeE as the fill color
+                 ggtitle('Median Income')
+```
+
+# Downloading DC Census Tract Data with Geometry
+
+Now let's download 5-year ACS data for all census tracts in Washington DC with tract geometry for all available years. The 5-year ACS data is typically available starting from 2009 (for 2005-2009) through the most recent year.
+
+```{r}
+
+library(tidycensus)
+library(tidyverse)
+options(tigris_use_cache = TRUE)
+# Get available years for 5-year ACS data (2009-2022 as of latest release)
+available_years <- 2005:2025
+
+
+# Initialize empty list to store data for each year
+dc_tract_data <- list()
+
+# Download data for each available year
+for(year in available_years) {
+  tryCatch({
+    # Download basic demographic data for DC tracts with geometry
+    dc_data <- get_acs(
+      geography = "tract",
+      state = "DC",           # Washington DC
+      year = year,
+      variables = c(
+        total_pop = "B01003_001",      # Total population
+        median_income = "B19013_001",   # Median household income
+        white_alone = "B02001_002",     # White alone
+        black_alone = "B02001_003",     # Black alone
+        asian_alone = "B02001_005",     # Asian alone
+        hispanic = "B03003_003"         # Hispanic or Latino
+      ),
+      output = "wide",
+      geometry = TRUE,        # Include tract geometry
+      cache_table = TRUE
+    )
+    
+    # Add year column
+    dc_data$year <- year
+    
+    # Store in list
+    dc_tract_data[[as.character(year)]] <- dc_data
+    
+    cat("Downloaded data for year:", year, "\n")
+    
+  }, error = function(e) {
+    cat("Error downloading data for year", year, ":", e$message, "\n")
+  })
+}
+
+# Combine all years into one dataset
+if(length(dc_tract_data) > 0) {
+  dc_all_years <- do.call(rbind, dc_tract_data)
+  cat("Total rows downloaded:", nrow(dc_all_years), "\n")
+  cat("Years available:", unique(dc_all_years$year), "\n")
+} else {
+  cat("No data was successfully downloaded\n")
+}
+```
+
+Let's also create a simple visualization showing the most recent year's data:
+
+```{r}
+# Get the most recent year's data
+if(exists("dc_all_years") && nrow(dc_all_years) > 0) {
+  recent_year <- max(dc_all_years$year)
+  dc_recent <- dc_all_years[dc_all_years$year == recent_year, ]
+  
+  # Plot median income by tract
+  ggplot(dc_recent) +
+    geom_sf(aes(fill = median_incomeE), color = "white", size = 0.1) +
+    scale_fill_viridis_c(name = "Median\nIncome", 
+                        labels = scales::dollar_format()) +
+    labs(title = paste("Median Household Income by Census Tract", recent_year),
+         subtitle = "Washington, DC") +
+    theme_void() +
+    theme(plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5))
+}
+```
+
+You can also download specific variables by exploring the available variables:
+
+```{r}
+# Load available variables for a recent year to see what's available
+vars_2022 <- load_variables(2022, "acs5", cache = TRUE)
+
+# Filter for housing, income, or demographic variables
+housing_vars <- vars_2022[grep("HOUSING|RENT|OWNER", vars_2022$concept, ignore.case = TRUE), ]
+income_vars <- vars_2022[grep("INCOME|EARNINGS", vars_2022$concept, ignore.case = TRUE), ]
+
+head(housing_vars)
+head(income_vars)
+```
+
+# Write Out Shapefiles
+
+Writing out data to shapefiles is also very easy. 
+
+```{r}
+# write a geojson for all years
+if(exists("dc_all_years")) {
+  st_write(dc_all_years, 
+           dsn = "dc_census_tracts_all_years.geojson",  
+           driver = "GeoJSON", delete_dsn = TRUE)
+}
+
+# write separate files for each year
+if(exists("dc_tract_data")) {
+  for(year in names(dc_tract_data)) {
+    filename <- paste0("dc_census_tracts_", year, ".geojson")
+    st_write(dc_tract_data[[year]], 
+             dsn = filename,  
+             driver = "GeoJSON", delete_dsn = TRUE)
+  }
+}
+```
+
+
