@@ -1,6 +1,6 @@
 # %%
 import geopandas as gpd
-import pandas as pd
+from tobler.area_weighted import area_interpolate
 
 # Path to geopackage
 gpkg_path = "./data/dc_census_tracts_complete.gpkg"
@@ -25,10 +25,6 @@ layers = [
     "acs_2023",
 ]
 
-# Read 2023 boundaries
-tracts_2023 = gpd.read_file(gpkg_path, layer="acs_2023")
-tracts_2023.explore(column="median_rentE")
-
 # %% remove water and public lands etc
 water = gpd.read_file("./data/Waterbodies.geojson").to_crs("EPSG:32618")
 national_parks = gpd.read_file("./data/National_Parks.geojson").to_crs("EPSG:32618")
@@ -37,16 +33,44 @@ dc_parks = gpd.read_file("./data/Parks_and_Recreation_Areas.geojson").to_crs(
 )
 
 for layer in layers:
+    print(f"Processing layer: {layer}")
     gdf = gpd.read_file(gpkg_path, layer=layer).to_crs("EPSG:32618")
     # Remove water and public lands from 2023 tracts
     gdf = gpd.overlay(gdf, water, how="difference")
     gdf = gpd.overlay(gdf, national_parks, how="difference")
     gdf = gpd.overlay(gdf, dc_parks, how="difference")
     gdf.to_file(f"cleaned_census_tracts.gpkg", layer=layer, driver="GPKG")
-
+    # %%
+    source_df = gpd.read_file(gpkg_path, layer="decennial_2000")
+source_df
 # %%
-tracts_2023 = gpd.read_file("cleaned_census_tracts.gpkg", layer="acs_2023")
-tracts_2023.explore()
+gpkg_path = "./data/cleaned_census_tracts.gpkg"
+
+
+results = area_interpolate(
+    source_df=gpd.read_file(gpkg_path, layer="decennial_2000"),
+    target_df=gpd.read_file(gpkg_path, layer="acs_2023"),
+    intensive_variables=[
+        "median_income",
+        "median_home_value",
+        "low_quart_rent",
+        "median_rent",
+        "upper_quart_rent",
+    ],
+    extensive_variables=[
+        "total_pop",
+        "white_alone",
+        "black_alone",
+        "asian_alone",
+        "hispanic",
+        "total_housing_units",
+        "owner_occupied",
+    ],
+)
+# %%
+results.explore("median_income")
+# %%
+gpd.read_file(gpkg_path, layer="decennial_2000").explore("median_income")
 # %%
 
 
@@ -65,7 +89,9 @@ def clean_tracts(gdf, value_col):
 # Dasymetric reallocation for sum and mean
 def dasymetric_reallocate(old_gdf, new_gdf, value_col, agg_method):
     old_gdf["old_area"] = old_gdf.geometry.area
-    intersected = gpd.overlay(old_gdf, new_gdf, how="intersection")
+    old_gdf["old_GEOID"] = old_gdf["GEOID"]
+    new_gdf["new_GEOID"] = new_gdf["GEOID"]
+    intersected = gpd.overlay(old_gdf, new_gdf, how="intersection", make_valid=True)
     intersected["intersect_area"] = intersected.geometry.area
     # For sum, allocate by area proportion
     if agg_method == "sum":
@@ -73,13 +99,21 @@ def dasymetric_reallocate(old_gdf, new_gdf, value_col, agg_method):
             intersected["intersect_area"] / intersected["old_area"]
         )
         result = (
-            intersected.groupby(intersected.index_right)["reallocated_value"]
+            intersected.groupby(intersected.new_GEOID)["reallocated_value"]
             .sum()
             .reset_index()
         )
         result.rename(
-            columns={"reallocated_value": value_col, "index_right": "index_right"},
+            columns={
+                "reallocated_value": value_col,
+                "new_GEOID": "GEOID",
+            },
             inplace=True,
+        )
+        result.drop(
+            columns=["new_GEOID", "old_GEOID", "old_area"],
+            inplace=True,
+            errors="ignore",
         )
     elif agg_method == "mean":
         intersected["weighted_value"] = (
@@ -95,6 +129,11 @@ def dasymetric_reallocate(old_gdf, new_gdf, value_col, agg_method):
         )
         result = grouped[["index_right", "reallocated_value"]]
         result.rename(columns={"reallocated_value": value_col}, inplace=True)
+        result.drop(
+            columns=["new_GEOID", "old_GEOID", "old_area"],
+            inplace=True,
+            errors="ignore",
+        )
     else:
         raise ValueError(f"Unknown aggregation method: {agg_method}")
     return result
