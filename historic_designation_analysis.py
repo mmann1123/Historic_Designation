@@ -155,7 +155,7 @@ print("\n===== Difference-in-Differences Analysis =====")
 
 
 # Function to run DiD for a variable
-def run_did_analysis(var, pre_period=2010, min_post_period=2014):
+def run_did_analysis(var, pre_period=2010, min_post_period=2016):
     print(f"\nRunning DiD for {var}...")
 
     # Create panel data in long format for analysis
@@ -181,7 +181,6 @@ def run_did_analysis(var, pre_period=2010, min_post_period=2014):
     return model
 
 
-# %%
 # Run DiD for key variables
 for var in rent_vars + ["nonwhite_nonasian_pct"]:
     if var in panel_df.columns:
