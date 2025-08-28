@@ -1,6 +1,15 @@
 # %%
 import geopandas as gpd
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from statsmodels.regression.linear_model import OLS
+from statsmodels.tools.tools import add_constant
+import statsmodels.formula.api as smf
+from scipy import stats
+import os
+from tqdm import tqdm
 
 layers = [
     "decennial_2000",
@@ -36,6 +45,11 @@ variables = [
     "renter_occupied",  # Renter-occupied housing units
 ]
 
-results = gpd.read_file(f"./data/final_census_tracts_2003.gpkg", layer="decennial_2000")
-hd = gpd.read_file("./data/hd_with_years.geojson")
+# Path to data
+gpkg_path = "./data/final_census_tracts_2003.gpkg"
+hd_path = "./data/hd_with_years.geojson"
+
+# Define variables of interest
+rent_vars = ["median_rent", "low_quart_rent", "upper_quart_rent"]
+ethnic_vars = ["white_alone", "black_alone", "asian_alone", "hispanic", "total_pop"]
 # %%
