@@ -146,8 +146,30 @@ print("Creating variables for analysis...")
 # Create unique tract ID
 panel_df["tract_id"] = panel_df["fid"]
 
-# %%
-panel_df.drop(columns=["geometry"]).to_csv("./data/panel_data.csv", index=False)
+# %% export data for R analysis
+# Select relevant columns
+export_cols = [
+    "tract_id",
+    "year",
+    "hd",
+    "median_rent",
+    "low_quart_rent",
+    "upper_quart_rent",
+    "nonwhite_nonasian_pct",
+    "white_alone",
+    "black_alone",
+    "asian_alone",
+    "hispanic",
+    "total_pop",
+]
+
+# Create a DataFrame with only the columns that exist
+export_df = panel_df[[col for col in export_cols if col in panel_df.columns]]
+export_df.sort_values(by=["tract_id", "year"], inplace=True)
+
+
+# Export to CSV
+export_df.to_csv("./data/panel_data.csv", index=False)
 
 # %%
 # Difference-in-Differences Analysis
