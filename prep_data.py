@@ -5,7 +5,6 @@ from tobler.area_weighted import area_interpolate
 # Path to geopackage
 gpkg_path = "./data/dc_census_tracts_complete.gpkg"
 
-# Layers to process (before 2020)
 layers = [
     "decennial_2000",
     "acs_2009",
@@ -93,12 +92,33 @@ for layer in layers:
             "owner_occupied",
         ],
     )
-    gdf.to_file(f"./data/final_census_tracts_2003.gpkg", layer=layer, driver="GPKG")
+    results.to_file(f"./data/final_census_tracts_2003.gpkg", layer=layer, driver="GPKG")
 
 # %%
+results = gpd.read_file(f"./data/final_census_tracts_2003.gpkg", layer="decennial_2000")
 results.explore("median_income")
-# %%
-gpd.read_file(gpkg_path, layer="decennial_2000").explore("median_income")
-# %%
-results.explode().area.describe()
+
+# %% get historic designation data
+
+# TO DO there are only 54 matches out of 69 bounds
+
+hd_bounds = gpd.read_file("./data/Historic_Districts.geojson").to_crs("EPSG:32618")
+hd_years = pd.read_csv("./data/hd_boundary_data.csv")
+hd = hd_bounds.merge(hd_years[["UNIQUEID", "YEAR"]], on="UNIQUEID", how="left")
+
+hd.loc[hd["UNIQUEID"] == "D_080", "YEAR"] = 2016
+hd.loc[hd["UNIQUEID"] == "D_082", "YEAR"] = 2021
+hd.loc[hd["UNIQUEID"] == "D_031", "YEAR"] = 1973
+hd.loc[hd["UNIQUEID"] == "D_043", "YEAR"] = 1981
+hd.loc[hd["UNIQUEID"] == "D_044", "YEAR"] = 1973
+hd.loc[hd["UNIQUEID"] == "D_056", "YEAR"] = 1973
+hd.loc[hd["UNIQUEID"] == "D_057", "YEAR"] = 1964
+hd.loc[hd["UNIQUEID"] == "D_060", "YEAR"] = 1964
+hd.loc[hd["UNIQUEID"] == "D_063", "YEAR"] = 1964
+hd.loc[hd["UNIQUEID"] == "D_016", "YEAR"] = 1964
+
+
+hd.to_crs("EPSG:32618").to_file("./data/hd_with_years.geojson", driver="GeoJSON")
+display(hd.head())
+hd.shape
 # %%

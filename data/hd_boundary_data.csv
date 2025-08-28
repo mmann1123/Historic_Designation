@@ -1,0 +1,79 @@
+OBJECTID,NAME,LABEL,ADDRESS,NR,NM,NHL,NHS,NHP,STATUS,DESIGNATIO,YEAR,EDIT_DATE,DESIGNAT_1,UNIQUEID,HITYPE,GIS_ID,SHAPEAREA,SHAPELEN,aream2
+312393,Anacostia Historic District,Anacostia HD,,Y,N,N,N,N,Designated,,1978,,DC/NR,D_024,HD,,345091.4383,4206.108106,345126.1913
+312394,Marine Barracks Historic District,Marine Barracks HD,"750 8th St, SE",Y,N,Y,N,N,Designated,,1972,1972,DC/NR/NHL,D_025,HD,,14510.52105,534.944,14511.9824
+312395,Woodley Park Historic District,Woodley Park HD,"Rock Creek Park, Calvert St, Woodley Rd, and Cathedral Ave, NW",Y,N,N,N,N,Designated,,1990,1990,DC/NR,D_026,HD,,220904.6561,2500.177835,220926.6921
+312396,Takoma Park Historic District,Takoma Park HD,,Y,N,N,N,N,Designated,,1983,1983,DC/NR,D_027,HD,,455823.5673,3769.332716,455868.1392
+312397,East and West Potomac Parks Historic District,East & West Potomac Parks HD,Along Potomac River from Constitution Avenue to Hains Point,Y,N,N,N,N,Designated,,1973,1973,DC/NR,D_028,HD,,2985819.456,11560.47235,2986120.156
+312398,Saint Elizabeths Hospital Historic District,St. Elizabeth's Hospital HD,"2700 Martin Luther King Jr. Ave, SE",Y,N,Y,N,N,Designated,,1990,1990,DC/NR/NHL,D_029,HD,,1467908.974,5528.078308,1468056.548
+312399,Grant Road Historic District,Grant Rd HD,"Grant Road from Wisconsin Ave to Brandywide St, NW",Y,N,N,N,N,Designated,,2002,2002,DC/NR,D_030,HD,,11675.25223,1356.530861,11676.39004
+312401,Mount Vernon Triangle Historic District,Mount Vernon Triangle HD,,Y,N,N,N,N,Designated,,2006,2006,DC/NR,D_032,HD,,20357.31724,645.5363123,20359.36847
+312416,Dupont Circle Historic District,Dupont Circle HD,,Y,N,N,N,N,Designated,,1988.333333,1988.333333,DC/NR,D_040,HD,,903047.0281,4422.186435,903137.6601
+312417,Foxhall Village Historic District,Foxhall HD,"Reservoir Road, Glover-Archibald Park, P Street NW, Foxhall Road",N,N,N,N,N,Designated,,2007,2007,DC,D_041,HD,,116764.3879,1729.750037,116776.1064
+312418,Mount Vernon Square Historic District,Mt. Vernon Square HD,"1st Street, New York Avenue, 7th Street, and M and N Streets, NW",Y,N,N,N,N,Designated,,1999,1999,DC/NR,D_042,HD,,184700.3325,2366.519393,184718.8803
+312421,Armed Forces Retirement Home-Washington Historic District,Armed Forces Retirement Home HD,,Y,N,N,N,N,Designated,,2007,2007,DC/NR,D_045,HD,,1109182.309,4343.285237,1109292.77
+312422,Washington Navy Yard Historic District,Washington Navy Yard HD,"8th & M Sts, SE",Y,N,Y,N,N,Designated,,1990.5,2006-12-29T00:00:00.000Z,DC/NR/NHL,D_046,HD,,310425.2252,3339.855535,310456.4915
+312432,Marjorie Webster Historic District,Marjorie Webster HD,Area South of Kalmia and East of 17th St NW,N,N,N,N,N,Designated,,2012,2012-03-06T00:00:00.000Z,DC,D_065,HD,,33576.43602,755.2281761,33587.718
+312433,Immaculata Seminary Historic District,Immaculata Seminary HD,4340 Nebraska Avenue NW,N,N,N,N,N,Designated,,2012,2012-01-12T00:00:00.000Z,,D_066,HD,,33132.59327,762.861985,33148.70764
+312434,Meridian Hill Historic District,Meridian Hill,Meridian Hill,N,N,N,N,N,Designated,,2014,2014,,D_068,HD,,261022.9064,3553.205461,261048.9989
+312435,Walter Reed Army Medical Center Historic District,Walter Reed Army Medical Center HD,"Generally bounded by Georgia Ave on the east, Aspen St on the south, 16th St and Alaska Ave on the west, and 14th and Dahlia St on the north",Y,N,N,N,N,Designated,2014-04-24T00:00:00.000Z,2014,2014,NR,D_069,HD,,446404.4572,2655.95744,446448.0872
+312436,Fort Circle Parks Historic District,Fort Circle Parks,Around DC,Y,N,N,N,N,Designated,,2015,2015-04-14T00:00:00.000Z,DC/NR,D_067,HD,,4875825.462,77294.01671,4876240.158
+312437,Capitol Hill Historic District,Capitol Hill HD,,Y,N,N,N,N,Designated,,1998,2006-12-29T00:00:00.000Z,DC/NR,D_023,HD,,3026203.428,9952.725263,3026508.07
+312438,"Young, Brown, Phelps and Spingarn Educational Campus Historic District",Spingarn Campus HD,,Y,N,N,N,N,Designated,2015-05-28T00:00:00.000Z,2015,2015-06-04T00:00:00.000Z,DC/NR,D_072,HD,,149815.9669,1853.321195,149829.0086
+312439,George Washington University /Old West End Historic District,GWU / Old West End HD,Generally around GW University,Y,N,N,N,N,Designated,2014-10-02T00:00:00.000Z,2014,2014,DC,D_070,HD,,151449.7221,2534.342,151464.9603
+312442,Observatory Hill Historic District,Observatory Hill,,Y,,Y,,,Designated,2016-10-27T00:00:00.000Z,2016,2016,DC,D_074,HD,,56510.43153,941.0778296,56531.08005
+312443,Mount Vernon Seminary for Girls Historic District,Mt Vernon Seminary,,,,,,,Designated,2016-05-26T00:00:00.000Z,2016,2016,DC,D_075,HD,,164766.315,1860.926992,164782.7213
+312444,Emerald Street Historic District,Emerald St HD,,,N,N,N,N,Designated,2017-05-25T00:00:00.000Z,2017,2017,DC,D_076,HD,,11065.91363,542.545,11067.02668
+312445,Kingman Park Historic District,Kingman Park HD,,,N,,,N,Designated,2018-05-03T00:00:00.000Z,2018,2018,DC,D_077,HD,,1277340.041,6526.228755,1277454.411
+312446,Bloomingdale Historic District,Bloomingdale HD,,,,,,,Designated,2018-07-26T00:00:00.000Z,2018,2018,,D_078,HD,,515836.063,3288.010269,515887.7569
+312440,Grant Circle Historic District,Grant Circle HD,Grant Circle NW,N,N,N,N,N,Designated,2015-04-02T00:00:00.000Z,2015,2015,DC,D_071,HD,,34436.02463,994.803657,34439.45791
+312441,Union Market Historic District,Union Market,,,,,,,Designated,2016-11-03T00:00:00.000Z,2016,2016,DC,D_073,HD,,37894.53888,1191.294121,37898.34684
+312402,Washington Heights Historic District,Washington Heights HD,"Bounded by Florida Ave. Washington Hilton, Columbia Rd., and rear of 18th St, NW",Y,N,N,N,N,Designated,,2006,2006,DC/NR,D_033,HD,,184677.4734,2139.951096,184695.9701
+312403,Fort McNair (The Old Arsenal),Fort McNair,"4th & P Streets, SW",N,N,N,N,N,Designated,,2006,2006,DC,D_034,HD,,351573.07,3030.695554,351608.4716
+312404,Georgetown Historic District,Georgetown HD,,Y,N,Y,N,N,Designated,,1950,1950,DC/NR/NHL,D_035,HD,,2637552.768,8459.044129,2637822.001
+312405,Strivers' Section Historic District,Strivers' Section HD,"Swann St, Florida Ave, Sixteenth St Historic District",Y,N,N,N,N,Designated,,1985,1985,DC/NR,D_036,HD,,136647.6863,2169.73264,136661.3383
+312406,Greater Fourteenth Street Historic District,Greater 14th St HD,,Y,N,N,N,N,Designated,,2000.5,2007-03-15T00:00:00.000Z,DC/NR,D_037,HD,,470106.5669,3780.422753,470153.7287
+312407,Sixteenth Street Historic District,Sixteenth St HD,,Y,N,N,N,N,Designated,,1992.5,2007-03-15T00:00:00.000Z,DC/NR,D_038,HD,,276900.5793,5711.785038,276928.3766
+312408,Greater U Street Historic District,Greater U St HD,,Y,N,N,N,N,Designated,,1998,1998,DC/NR,D_039,HD,,697603.7745,5089.275298,697673.7217
+312409,Federal Triangle Historic District,Federal Triangle HD,"Between 15th Street, Constitution and Pennsylvania Avenues, NW",N,N,N,N,N,Designated,,1968,1968,DC,D_001,HD,,326753.5616,3063.039089,326786.4471
+312411,Washington National Cathedral and Close Historic District,Washington Cathedral HD,"Wisconsin Avenue at Massachusetts Avenue, NW",Y,N,N,N,N,Designated,,1968,1968,DC/NR,D_003,HD,,227640.4844,1864.028472,227663.2141
+312412,Sheridan-Kalorama Historic District,Sheridan-Kalorama HD,,Y,N,N,N,N,Designated,,1989,1989,DC/NR,D_004,HD,,602598.528,3495.680043,602658.9713
+312413,Shaw Historic District,Shaw HD,,Y,N,N,N,N,Designated,,1999,1999,DC/NR,D_005,HD,,338667.312,3673.116351,338701.3214
+312414,Pennsylvania Avenue National Historic Site,Pennsylvania Ave NHS,,Y,N,N,Y,N,Designated,,1966,1966,DC/NR/NHS,D_006,,,1054499.276,6721.143885,1054605.365
+312415,Mount Pleasant Historic District,Mt. Pleasant HD,,Y,N,N,N,N,Designated,,1986,1986,DC/NR,D_007,HD,,711467.1456,4044.45161,711538.0803
+312207,Kalorama Triangle Historic District,Kalorama Triangle HD,,Y,N,N,N,N,Designated,,1987,1987,DC/NR,D_013,HD,,241040.5081,2315.908608,241064.6444
+312208,Gallaudet College Historic District,Gallaudet College HD,"7th St & Florida Ave, NE",Y,N,Y,N,N,Designated,,1974,1974,DC/NR/NHL,D_014,HD,,53900.59212,1139.499342,53906.00098
+312202,McMillan Park Reservoir Historic District,McMillan Park Reservoir HD,"1st St & Michigan Ave, NW",N,N,N,N,N,Designated,,1991,1991,DC,D_008,HD,,450501.1797,3145.560206,450546.2296
+312203,Massachusetts Avenue Historic District,Massachusetts Ave HD,"Massachusetts Ave from 17th St, NW to Observatory Cir, NW",Y,N,N,N,N,Designated,,1973,1973,DC/NR,D_009,HD,,393430.6751,7466.747392,393470.1248
+312204,Logan Circle Historic District,Logan Circle HD,Logan Circle,Y,N,N,N,N,Designated,,1972,1972,DC/NR,D_010,HD,,83830.17697,1654.230295,83838.57406
+312205,LeDroit Park Historic District,LeDroit Park HD,,Y,N,N,N,N,Designated,,1974,1974,DC/NR,D_011,HD,,177563.436,1808.435396,177581.2418
+312206,Lafayette Square Historic District,Lafayette Square HD,,Y,N,Y,N,N,Designated,,1970,1970,DC/NR/NHL,D_012,HD,,186597.7453,3052.37994,186616.5072
+312387,Financial Historic District,Financial HD,"15th St NW btwn Pennsylvania Ave and I St, NW",Y,N,N,N,N,Designated,,2016,2016,DC/NR,D_017,HD,,148450.945,2631.295803,148465.8771
+312388,Blagden Alley/Naylor Court,Blagden Alley/Naylor Court HD,,Y,N,N,N,N,Designated,,1990,1990,DC/NR,D_018,HD,,56761.23239,998.0172774,56766.93218
+312389,Seventeenth Street Historic District,Seventeenth St HD,"Seventeenth St, NW, West Side between New York and Constitution Aves",N,N,N,N,N,Designated,,1968,1968,DC,D_019,HD,,81244.10534,1308.221159,81252.26194
+312390,Foggy Bottom Historic District,Foggy Bottom HD,,Y,N,N,N,N,Designated,,1987,1987,DC/NR,D_020,HD,,55322.64336,1297.392872,55328.21071
+312391,Downtown Historic District,Downtown HD,,Y,N,N,N,N,Designated,,2001,2001,DC/NR,D_021,HD,,201852.056,4864.68702,201872.3591
+312392,Cleveland Park Historic District,Cleveland Park HD,"Woodley Rd, Wisconsin Ave, Tilden St, and Connecticut Ave, NW",Y,N,N,N,N,Designated,,1987,1987,DC/NR,D_022,HD,,1262643.041,6475.029973,1262768.833
+,Bloomingdale/LeDroit Expansion,,,,,,,,Designated,,2018,2018,,,,,,,25839.66694
+,Potomac Annex Historic District (Washington Naval Hospital),,,,,,,,Planned,,2018,2018,,,,,,,48827.4062
+,Walter Reed General Hospital Historic District,,,,,,,,Planned,,2018.7,2018.7,,,,,,,312468.5679
+,Northwest Rectangle Historic District,,,,,,,,Planned,,2019.4,2019.4,,,,,,,418156.6343
+,Washington Navy Yard Annex Historic District,,,,,,,,Planned,,2020.1,2020.1,,,,,,,231543.7766
+,U.S. Naval Observatory Historic District,,,,,,,,Planned,,2020.8,2020.8,,,,,,,319921.9979
+,Bolling Air Force Base Historic District,,,,,,,,Planned,,2021.5,2021.5,,,,,,,299785.5229
+,Washington Navy Yard East Extension Historic District,,,,,,,,Planned,,2022.2,2022.2,,,,,,,107888.9124
+,Meridian Hill Area,,,,,,,,Planned,,2022.9,2022.9,,,,,,,261325.7598
+,George Washington Memorial Parkway (Clara Barton Parkway),,,,,,,,Planned,,2023.6,2023.6,,,,,,,67409.28072
+,George Washington Memorial Parkway (Columbia Island),,,,,,,,Planned,,2024.3,2024.3,,,,,,,146703.9126
+,Suitland Parkway (Res 675),,,,,,,,Planned,,2025,2025,,,,,,,551346.2201
+,Chevy Chase,,,,,,,,Planned,,2025.7,2025.7,,,,,,,899527.5913
+,Burleith,,,,,,,,Planned,,2026.4,2026.4,,,,,,,453609.0121
+,Lanier Heights,,,,,,,,Planned,,2027.1,2027.1,,,,,,,225328.9166
+,Northwest Rectangle,,,,,,,,Planned,,2027.8,2027.8,,,,,,,521493.3474
+,Columbia Heights,,,,,,,,Planned,,2028.5,2028.5,,,,,,,1569882.689
+,Southwest,,,,,,,,Planned,,2029.2,2029.2,,,,,,,2549347.964
+,Old Southwest,,,,,,,,Planned,,2029.9,2029.9,,,,,,,151992.3945
+,Judiciary Square,,,,,,,,Planned,,2030.6,2030.6,,,,,,,338126.6603
+,Brookland,,,,,,,,Planned,,2031.3,2031.3,,,,,,,2648066.288
+,Trinidad,,,,,,,,Planned,,2032,2032,,,,,,,786328.8243
+,Hill East,,,,,,,,Planned,,2032.7,2032.7,,,,,,,1729634.419
+,Congress Heights,,,,,,,,Planned,,2033.4,2033.4,,,,,,,2171366.777
